@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
+use App\Repository\ClubRepository;
 
 class ClubController extends AbstractController
 {
@@ -36,7 +37,16 @@ class ClubController extends AbstractController
     }
 
     #[Route('/reservation', name: 'app_reservation')]
-    public function reservation(){
-        return new  Response("nouvelle page");
+    public function reservation(Request $request) 
+    {
+
+        $value=$request->query->get('value');
+        return $this->render('club/detail.html.twig', ['value'=> $value]);
+    }
+    #[Route('/clubs', name: 'app_clubs')]
+    public function listClub(ClubRepository $repository)
+    {
+        $clubs = $repository->findAll();
+        return $this->render("club/listClub.html.twig",array("tabClub"=>$clubs));
     }
 }
