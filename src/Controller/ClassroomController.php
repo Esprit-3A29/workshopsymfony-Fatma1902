@@ -1,0 +1,42 @@
+<?php
+
+namespace App\Controller;
+use App\Entity\Classroom;
+use App\Form\FormClassType;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use App\Repository\ClassroomRepository;
+use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\Request;
+
+class ClassroomController extends AbstractController
+{
+    #[Route('/classroom', name: 'app_classroom')]
+    public function index(): Response
+    {
+        return $this->render('classroom/index.html.twig', [
+            'controller_name' => 'ClassroomController',
+        ]);
+    }
+    #[Route('/classrooms', name: 'list_classroom')]
+    public function listClassroom(ClassroomRepository $repository)
+    {
+        $classrooms = $repository->findAll();
+        return $this->render("classrooms/listClassroom.html.twig",array("tabClassrooms"=>$classrooms));
+    }
+    #[Route('/addclass', name: 'add')]
+    public function addClass(ManagerRegistry $doctrine,Request $request)
+    {
+        $classroom= new Classroom;
+        $form= $this->createForm(FormClassType::class,$classroom);
+        $form->handleRequest($request) ;
+        if ($form->isSubmitted()){
+             $em= $doctrine->getManager();
+             $em->persist($classroom);
+             $em->flush();
+             return  $this->redirectToRoute("list_classroom");
+         }
+        return $this->renderForm("classroom/AddClass.html.twig",array("formclassroom"=>$form));
+}
+}
