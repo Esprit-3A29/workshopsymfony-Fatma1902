@@ -25,7 +25,8 @@ class ClassroomController extends AbstractController
         $classrooms = $repository->findAll();
         return $this->render("classrooms/listClassroom.html.twig",array("tabClassrooms"=>$classrooms));
     }
-    #[Route('/addclass', name: 'add')]
+
+    #[Route('/addclassroom', name: 'add_classroom')]
     public function addClass(ManagerRegistry $doctrine,Request $request)
     {
         $classroom= new Classroom;
@@ -38,5 +39,29 @@ class ClassroomController extends AbstractController
              return  $this->redirectToRoute("list_classroom");
          }
         return $this->renderForm("classroom/AddClass.html.twig",array("formclassroom"=>$form));
+}
+#[Route('/updateForm', name: 'update')]
+public function  updateForm($id,ClassroomRepository $repository,ManagerRegistry $doctrine,Request $request)
+{
+    $classroom = $repository->find($id);
+    $form= $this->createForm(FromClassType::class,$classroom);
+    $form->handleRequest($request) ;
+    if ($form->isSubmitted()){
+        $em= $doctrine->getManager();
+        $em->flush();
+        return  $this->redirectToRoute("list_classroom");
+    }
+    return $this->renderForm("classroom/update.html.twig",array("formClassroom"=>$form));
+}
+
+#[Route('/removeForm', name: 'remove')]
+
+public function removeClassroom(ManagerRegistry $doctrine,$id,StudentRepository $repository)
+{
+    $classroom= $repository->find($id);
+    $em = $doctrine->getManager();
+    $em->remove($classroom);
+    $em->flush();
+    return  $this->redirectToRoute("list_classroom");
 }
 }

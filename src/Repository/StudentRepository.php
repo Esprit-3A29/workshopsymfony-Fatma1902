@@ -63,4 +63,7 @@ class StudentRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+public function  __toString(){
+    return(String)$this->getName();
+}
 }
