@@ -24,13 +24,13 @@ class StudentController extends AbstractController
     public function liststudents(StudentRepository $repository)
     {
         $students = $repository->findAll();
-        return $this->render("student/listStudent.html.twig",array("tabStudents"=>$students));
+        return $this->render("student/listStudent.html.twig",array("tabStudents"=>$students,"sortbymoyenne"=>$students));
     }
     #[Route('/addstudent', name: 'add')]
     public function addStudent(StudentRepository $repository,ManagerRegistry $doctrine,Request $request)
     {
         $student= new Student;
-        $form= $this->createForm(formstudentType::class,$student);
+        $form= $this->createForm(FormstudentType::class,$student);
         $form->handleRequest($request) ;
         if ($form->isSubmitted()){
              $repository->add(student,true);

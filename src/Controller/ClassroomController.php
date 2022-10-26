@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\ClassroomRepository;
+use App\Repository\StudentRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -40,7 +41,7 @@ class ClassroomController extends AbstractController
          }
         return $this->renderForm("classroom/AddClass.html.twig",array("formclassroom"=>$form));
 }
-#[Route('/updateForm', name: 'update')]
+#[Route('/update/{id}', name: 'update')]
 public function  updateForm($id,ClassroomRepository $repository,ManagerRegistry $doctrine,Request $request)
 {
     $classroom = $repository->find($id);
@@ -54,7 +55,7 @@ public function  updateForm($id,ClassroomRepository $repository,ManagerRegistry 
     return $this->renderForm("classroom/update.html.twig",array("formClassroom"=>$form));
 }
 
-#[Route('/removeForm', name: 'remove')]
+#[Route('/remove/{id}', name: 'remove')]
 
 public function removeClassroom(ManagerRegistry $doctrine,$id,StudentRepository $repository)
 {
@@ -63,5 +64,15 @@ public function removeClassroom(ManagerRegistry $doctrine,$id,StudentRepository 
     $em->remove($classroom);
     $em->flush();
     return  $this->redirectToRoute("list_classroom");
+}
+#[Route('/showClassroom/{id}', name: 'showClassroom')]
+public function showClassroom(StudentRepository $repo,$id,ClassroomRepository $repository)
+{
+    $classroom = $repository->find($id);
+   $students= $repo->getStudentsByClassroom($id);
+    return $this->render("classroom/showclassroom.html.twig",array(
+        'showClassroom'=>$classroom,
+        'tabStudent'=>$students
+    ));
 }
 }
